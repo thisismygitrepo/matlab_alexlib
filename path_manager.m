@@ -12,18 +12,22 @@ classdef path_manager
     
     methods(Static)
         
-        function posix = makeUnix(path)
-           posix = strrep(path, "\", "/"); 
+        function result = fix(path)
+           tmp = string(path);  % assert that it is a string not a char           
+           result = strrep(tmp, "\", string(filesep)); % only works on strings.
+           result = strrep(result, "/", string(filesep)); % only works on strings.
         end
         
         function result = join(varargin)
-            result = "";
-           for i=1:size(varargin, 1)
-              tmp = makeUnix(varargin(i));
-              if tmp(1) == "/"
-                 result = result + tmp; 
+           result = "";  % result is a string
+           
+           for i=1:length(varargin)  
+              tmp = char(path_manager.fix(varargin{i}));
+              % convert it to char so that we can access the first elem.
+              if tmp(1) == filesep
+                 result = result + tmp; % char is coerced into string.
               else
-                  result = result + "/" + tmp;
+                  result = result + filesep + tmp;
               end
            end
            
@@ -55,11 +59,12 @@ classdef path_manager
         end
     end
     
-   methods(Static)
-       function p = path()
-           p = py.alexlib.toolbox.P;
-       end
-   end
+%    methods(Static)
+%        function p = path()
+%            p = py.alexlib.toolbox.P;
+%        end
+%    end
+
 end
 
 
