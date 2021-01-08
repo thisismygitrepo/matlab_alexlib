@@ -24,7 +24,7 @@ classdef path_manager
            for i=1:length(varargin)  
               tmp = char(path_manager.fix(varargin{i}));
               % convert it to char so that we can access the first elem.
-              if tmp(1) == filesep
+              if (tmp(1) == filesep) || i == 1  % do not add "/\" to first item.
                  result = result + tmp; % char is coerced into string.
               else
                   result = result + filesep + tmp;
