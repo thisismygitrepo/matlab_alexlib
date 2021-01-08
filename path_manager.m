@@ -10,6 +10,26 @@ classdef path_manager
         home;
     end
     
+    methods(Static)
+        
+        function posix = makeUnix(path)
+           posix = strrep(path, "\", "/"); 
+        end
+        
+        function result = join(varargin)
+            result = "";
+           for i=1:size(varargin, 1)
+              tmp = makeUnix(varargin(i));
+              if tmp(1) == "/"
+                 result = result + tmp; 
+              else
+                  result = result + "/" + tmp;
+              end
+           end
+           
+        end
+    end
+    
     methods
         function obj = path_manager()
 %             machine = computer;
