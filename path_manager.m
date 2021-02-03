@@ -16,6 +16,11 @@ classdef path_manager
            tmp = string(path);  % assert that it is a string not a char           
            result = strrep(tmp, "\", string(filesep)); % only works on strings.
            result = strrep(result, "/", string(filesep)); % only works on strings.
+           result = char(result);
+           if result(end) == filesep
+               result = result(1:end - 1);
+           end
+           result = string(result);
         end
         
         function result = join(varargin)
@@ -31,6 +36,15 @@ classdef path_manager
               end
            end
            
+        end
+        
+        function add_tomlib(path)
+           if nargin == 1
+               addpath(path)
+           else
+               parts = split(pwd, 'toml');
+               addpath(path_manager.join(parts{1}, 'tomlib'))
+           end
         end
     end
     
@@ -52,11 +66,11 @@ classdef path_manager
             obj.rdrive = fullfile(obj.home, "my_r_drive");
         end
 
-        function outputArg = gettb(obj)
-            %METHOD1 Summary of this method goes here
-            %   Detailed explanation goes here
-            outputArg = py.alexlib.toolbox;
-        end
+%         function outputArg = gettb(obj)
+%             %METHOD1 Summary of this method goes here
+%             %   Detailed explanation goes here
+%             outputArg = py.alexlib.toolbox;
+%         end
     end
     
 %    methods(Static)
