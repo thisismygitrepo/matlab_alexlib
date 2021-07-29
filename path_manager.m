@@ -17,7 +17,7 @@ classdef path_manager
            result = strrep(tmp, "\", string(filesep)); % only works on strings.
            result = strrep(result, "/", string(filesep)); % only works on strings.
            result = char(result);
-           if result(end) == filesep
+           if result(end) == filesep  % remove filesep from the end of the path if it exists.
                result = result(1:end - 1);
            end
            result = string(result);
@@ -29,7 +29,7 @@ classdef path_manager
            for i=1:length(varargin)  
               tmp = char(path_manager.fix(varargin{i}));
               % convert it to char so that we can access the first elem.
-              if (tmp(1) == filesep) || i == 1  % do not add "/\" to first item.
+              if (tmp(1) == filesep) || i == 1  % do not add "/\" to first item, nor an item that has filesep at its start already.
                  result = result + tmp; % char is coerced into string.
               else
                   result = result + filesep + tmp;
@@ -42,9 +42,19 @@ classdef path_manager
            if nargin == 1
                addpath(path)
            else
-               parts = split(pwd, 'toml');
-               addpath(path_manager.join(parts{1}, 'tomlib'))
+               % try to do it automatically, but error here should never
+               % pass silently.
+               path = path_manager.join(path_manager.absfrom('toml'), 'tomlib');
+               if exist(path, 'dir') == 0
+                  error("Could not add tomlib automatically. Pass it manually instead"); 
+               end
+               addpath(path)
            end
+        end
+        
+        function abspath = absfrom(name)
+            parts = split(pwd, name);
+            abspath = path_manager.join(parts{1}, name);
         end
     end
     
@@ -72,7 +82,7 @@ classdef path_manager
 %             outputArg = py.alexlib.toolbox;
 %         end
     end
-    
+
 %    methods(Static)
 %        function p = path()
 %            p = py.alexlib.toolbox.P;
